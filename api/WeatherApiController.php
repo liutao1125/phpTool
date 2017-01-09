@@ -7,7 +7,7 @@
  * @datetime 2016/12/5
  * @site http://apistore.baidu.com/apiworks/servicedetail/478.html
  */
-class WeatherApiController extends My_Controller
+class WeatherApiController extends ApiController
 {
 
     /**
@@ -20,12 +20,12 @@ class WeatherApiController extends My_Controller
         $city = $this->_request->getPost("city");
         $url = "http://apis.baidu.com/heweather/weather/free?city=".$city;
         $response = CurlService::httpGet($url);
+//        echo $response;die;
         $res = json_decode($response,true);
         $data = $res['HeWeather data service 3.0'];
         if(empty($data))
         {
-            $result['status'] = $res['errNum'];
-            $result['errorMsg'] = $res['errMsg'];
+            $result = $this->errorCode($res['errNum'],'WEATHER');
         }
         else
         {
@@ -57,68 +57,14 @@ class WeatherApiController extends My_Controller
             }
             else
             {
-                $result['status'] = 0;
+                $result['status'] = 1038;
                 $result['errorMsg'] = $status;
             }
         }
-        header('Content-Type:application/json; charset=UTF-8');
-        echo json_encode($result,JSON_UNESCAPED_UNICODE);
+        $this->ajaxReturn($result);
 
     }
 
-    /**
-     * 测试接口
-     * @author liutao
-     * @datetime 2016/12/5
-     */
-    public function testAction()
-    {
-        $city = $this->_request->getPost("city");
-        $url = "http://apis.baidu.com/heweather/weather/free?city=".$city;
-        $response = CurlService::httpGet($url);
-        $res = json_decode($response,true);
-        $data = $res['HeWeather data service 3.0'];
-        if(empty($data))
-        {
-            $result['status'] = $res['errNum'];
-            $result['errorMsg'] = $res['errMsg'];
-            header('Content-Type:application/json; charset=UTF-8');
-            echo json_encode($result,JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-        else
-        {
-            $status = $data[0]['status'];
-            if($status == "ok")
-            {
-                $now['city'] = $data[0]['basic']['city'];
-                $now['temperature'] = $data[0]['now']['tmp'];
-                $now['text'] = $data[0]['now']['cond']['txt'];
-                $air['quality'] = $data[0]['aqi']['city']['aqi'];
-                $air['text'] = $data[0]['aqi']['city']['qlty'];
-                $air['pm10'] = $data[0]['aqi']['city']['pm10'];
-                $air['pm25'] = $data[0]['aqi']['city']['pm25'];
-                $result['status'] = 1;
-                $result['now'] = $now;
-                $result['air'] = $air;
-                header('Content-Type:application/json; charset=UTF-8');
-                echo json_encode($result,JSON_UNESCAPED_UNICODE);
-                exit;
-            }
-            else
-            {
-                $result['status'] = 0;
-                $result['errorMsg'] = $status;
-                header('Content-Type:application/json; charset=UTF-8');
-                echo json_encode($result,JSON_UNESCAPED_UNICODE);
-                exit;
-            }
-
-        }
-
-
-
-    }
 
 
 }

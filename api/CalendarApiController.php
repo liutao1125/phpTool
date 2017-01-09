@@ -7,8 +7,10 @@
  * @datetime 2016/12/7
  * @site https://www.juhe.cn/docs/api/id/65
  */
-class CalendarApiController extends My_Controller
+class CalendarApiController extends ApiController
 {
+    //服务商key
+    private $key = "2e9ff26e4530ab6cede8a034cea9539b";
 
     /**
      * 根据阳历日期查询老黄历
@@ -18,14 +20,14 @@ class CalendarApiController extends My_Controller
     public function calendarAction()
     {
         $date = $this->_request->getPost("date");
-        $url = "http://v.juhe.cn/laohuangli/d?date=".$date."&key=2e9ff26e4530ab6cede8a034cea9539b";
-        $response = CurlService::httpGet($url);
+        $url = "http://v.juhe.cn/laohuangli/d?date=".$date."&key=".$this->key;
+        $response = CurlService::httpGetInfo($url);
         $res = json_decode($response,true);
         if($res['error_code'] == 0)
         {
             if(empty($res['result']))
             {
-                $result['status'] = 0;
+                $result['status'] = 1036;
                 $result['errorMsg'] = "请输入正确格式的日期";
             }
             else
@@ -44,11 +46,9 @@ class CalendarApiController extends My_Controller
         }
         else
         {
-            $result['status'] = $res['error_code'];
-            $result['errorMsg'] = $res['reason'];
+            $result = $this->errorCode($res['error_code'],'CALENDAR');
         }
-        header('Content-Type:application/json; charset=UTF-8');
-        echo json_encode($result,JSON_UNESCAPED_UNICODE);
+        $this->ajaxReturn($result);
 
     }
 
@@ -60,14 +60,14 @@ class CalendarApiController extends My_Controller
     public function testAction()
     {
         $date = $this->_request->getPost("date");
-        $url = "http://v.juhe.cn/laohuangli/d?date=".$date."&key=2e9ff26e4530ab6cede8a034cea9539b";
+        $url = "http://v.juhe.cn/laohuangli/d?date=".$date."&key=".$this->key;
         $response = CurlService::httpGet($url);
         $res = json_decode($response,true);
         if($res['error_code'] == 0)
         {
             if(empty($res['result']))
             {
-                $result['status'] = 0;
+                $result['status'] = 1036;
                 $result['errorMsg'] = "请输入正确格式的日期";
             }
             else
@@ -86,12 +86,9 @@ class CalendarApiController extends My_Controller
         }
         else
         {
-            $result['status'] = $res['error_code'];
-            $result['errorMsg'] = $res['reason'];
+            $result = $this->errorCode($res['error_code'],'CALENDAR');
         }
-        header('Content-Type:application/json; charset=UTF-8');
-        echo json_encode($result,JSON_UNESCAPED_UNICODE);
-
+        $this->ajaxReturn($result);
 
     }
 

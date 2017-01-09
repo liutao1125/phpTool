@@ -16,7 +16,10 @@ class VehicleApiController extends My_Controller
      */
     public function registerAction()
     {
-        $postInfo = $this->_request->getPost();
+        $postInfo = $this->_request->getPost('sss');
+        $postInfo = json_decode($postInfo);
+        $response["code"] = 1;
+        $response["msg"] = $postInfo;
         $userModel = new User_UserModel();
         if(empty($postInfo))
         {
@@ -54,7 +57,8 @@ class VehicleApiController extends My_Controller
      */
     public function vehicleRegisterAction()
     {
-        $postInfo = $this->_request->getPost();
+        $postInfo = file_get_contents('php://input');
+        $postInfo = json_decode($postInfo,true);
         $userModel = new Vehicle_UserModel();
         $response = array();
         if(empty($postInfo))
